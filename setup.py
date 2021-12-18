@@ -1,4 +1,3 @@
-# Install setuptools if it isn't available:
 try:
     import setuptools
 except ImportError:
