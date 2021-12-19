@@ -5,12 +5,7 @@ import functools
 from .ktensor import ktensor
 from .dtensor import dtensor, unfolded_dtensor
 from .ctools import kr, _rT, _cT, _compress, _sign_flip, _eiginit, _normalization, _arrange
-try:
-    # Python 2
-    xrange
-except NameError:
-    # Python 3, xrange is now named range
-    xrange = range
+
 
 def ccp_als(X, r=None, c=True, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     """
@@ -54,28 +49,8 @@ def ccp_als(X, r=None, c=True, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     P : ktensor
         Tensor stored in decomposed form as a Kruskal operator.
 
-    
-    Notes
-    -----  
-    
-    
-    References
-    ----------
-    Kolda, T. G. & Bader, B. W.
-    "Tensor Decompositions and Applications." 
-    SIAM Rev. 51 (2009): 455-500
-    http://epubs.siam.org/doi/pdf/10.1137/07070111X
-
-    Comon, Pierre & Xavier Luciani & Andre De Almeida. 
-    "Tensor decompositions, alternating least squares and other tales."
-    Journal of chemometrics 23 (2009): 393-405.
-    http://onlinelibrary.wiley.com/doi/10.1002/cem.1236/abstract
 
     """
-
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    # Error catching
-    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
     
     if X.ndim < 3:
         raise ValueError("Array with ndim >= 3 expected.")
@@ -117,7 +92,7 @@ def ccp_als(X, r=None, c=True, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     # Note that only N-1 components are required for initialization
     # Hence, U_1 is assigned an empty list, i.e., U_1 = []
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    U = [_eiginit(X.unfold(n), r, n) for n in xrange(N)]    
+    U = [_eiginit(X.unfold(n), r, n) for n in range(N)]
     
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Iterate the ALS algorithm until convergence or maxiter is reached
@@ -126,13 +101,13 @@ def ccp_als(X, r=None, c=True, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     # iii) Update component U_1, U_2, ... U_N
     # iv) Normalize columns of U_1, U_2, ... U_N to length 1
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    for itr in xrange(maxiter):
+    for itr in range(maxiter):
         fitold = fit
 
-        for n in xrange(N):
+        for n in range(N):
             
             # Select all components, but U_n
-            components = [U[j] for j in xrange(N) if j != n]
+            components = [U[j] for j in range(N) if j != n]
 
             # i) compute the N-1 gram matrices 
             grams = [ arr.T.dot(arr) for arr in components ]             
@@ -171,7 +146,7 @@ def ccp_als(X, r=None, c=True, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     P = ktensor(U, lamb)
     
     if c==True:
-        for n in xrange(len(P.U)):
+        for n in range(len(P.U)):
             if Q[n] is not None:
               P.U[n] = np.array(Q[n]).dot(P.U[n])
               
