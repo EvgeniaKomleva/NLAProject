@@ -1,5 +1,6 @@
 
 import numpy as np
+from numba.cuda import jit
 from numpy import dot, ones, array, outer, zeros, prod, sum
 from .core import khatrirao, tensor_mixin
 from .dtensor import dtensor
@@ -52,7 +53,7 @@ class ktensor(object):
             raise ValueError('Dimension mismatch of factor matrices')
         if lmbda is None:
             self.lmbda = ones(self.rank)
-
+    #@jit(cache=True)
     def __eq__(self, other):
         if isinstance(other, ktensor):
             # avoid costly elementwise comparison for obvious cases
@@ -66,7 +67,7 @@ class ktensor(object):
         else:
             # TODO implement __eq__ for tensor_mixins and ndarrays
             raise NotImplementedError()
-
+    #@jit(cache=True)
     def uttkrp(self, U, mode):
 
         """
@@ -95,7 +96,7 @@ class ktensor(object):
         for i in range(mode) + range(mode + 1, N):
             W = W * dot(self.U[i].T, U[i])
         return dot(self.U[mode], W)
-
+    #@jit(cache=True)
     def norm(self):
         """
         Efficient computation of the Frobenius norm for ktensors
@@ -110,7 +111,7 @@ class ktensor(object):
         for i in range(N):
             coef = coef * dot(self.U[i].T, self.U[i])
         return np.sqrt(coef.sum())
-
+    #@jit(cache=True)
     def innerprod(self, X):
         """
         Efficient computation of the inner product of a ktensor with another tensor
@@ -134,7 +135,7 @@ class ktensor(object):
                 vecs.append(self.U[n][:, r])
             res += self.lmbda[r] * X.ttv(tuple(vecs))
         return res
-
+    #@jit(cache=True)
     def toarray(self):
         """
         Converts a ktensor into a dense multidimensional ndarray
@@ -147,7 +148,7 @@ class ktensor(object):
         """
         A = dot(self.lmbda, khatrirao(tuple(self.U)).T)
         return A.reshape(self.shape)
-
+    #@jit(cache=True)
     def totensor(self):
         """
         Converts a ktensor into a dense tensor
@@ -159,7 +160,7 @@ class ktensor(object):
             the original ktensor.
         """
         return dtensor(self.toarray())
-
+    #@jit(cache=True)
     def tovec(self):
         v = zeros(sum([s * self.rank for s in self.shape]))
         offset = 0
@@ -171,12 +172,12 @@ class ktensor(object):
 
 
 class vectorized_ktensor(object):
-
+    #@jit(cache=True)
     def __init__(self, v, shape, lmbda):
         self.v = v
         self.shape = shape
         self.lmbda = lmbda
-
+    #@jit(cache=True)
     def toktensor(self):
         order = len(self.shape)
         rank = len(self.v) / sum(self.shape)

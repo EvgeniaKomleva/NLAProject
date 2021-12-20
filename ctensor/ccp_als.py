@@ -2,11 +2,14 @@ import numpy as np
 import scipy as sci
 import timeit
 import functools
+
+from numba.cuda import jit
+
 from .ktensor import ktensor
 from .dtensor import dtensor, unfolded_dtensor
 from .ctools import kr, _rT, _cT, _compress, _sign_flip, _eiginit, _normalization, _arrange
 
-
+#@jit(cache=True)
 def ccp_als(X, r=None, c=True, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     """
     Randomized CP Decomposition using the Alternating Least Squares Method.
@@ -49,8 +52,28 @@ def ccp_als(X, r=None, c=True, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     P : ktensor
         Tensor stored in decomposed form as a Kruskal operator.
 
+    
+    Notes
+    -----  
+    
+    
+    References
+    ----------
+    Kolda, T. G. & Bader, B. W.
+    "Tensor Decompositions and Applications." 
+    SIAM Rev. 51 (2009): 455-500
+    http://epubs.siam.org/doi/pdf/10.1137/07070111X
+
+    Comon, Pierre & Xavier Luciani & Andre De Almeida. 
+    "Tensor decompositions, alternating least squares and other tales."
+    Journal of chemometrics 23 (2009): 393-405.
+    http://onlinelibrary.wiley.com/doi/10.1002/cem.1236/abstract
 
     """
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # Error catching
+    #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~     
     
     if X.ndim < 3:
         raise ValueError("Array with ndim >= 3 expected.")

@@ -1,16 +1,11 @@
 import numpy as np
 import scipy as sci
 import timeit
-
+from numba.cuda import jit
 from .ktensor import ktensor
 from .dtensor import dtensor, unfolded_dtensor
-try:
-    # Python 2
-    xrange
-except NameError:
-    # Python 3, xrange is now named range
-    xrange = range
 
+#@jit(cache=True)
 def kr(A, B):
     """
     Khatri-Rao product.
@@ -58,14 +53,16 @@ def kr(A, B):
 
 
 #matrix transpose for real matricies
+#@jit(cache=True)
 def _rT(A): 
     return A.T
     
 #matrix transpose for complex matricies
+#@jit(cache=True)
 def _cT(A): 
     return A.conj().T   
 
-
+#@jit(cache=True)
 def _compress(X, r, p, q):
     
     
@@ -183,7 +180,7 @@ def _compress(X, r, p, q):
     # Return Q and B
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   
     return ( Qlist, X )
-
+#@jit(cache=True)
 def _sign_flip(A):
     """
     Flip the signs of A so that largest absolute value is positive.
@@ -191,7 +188,7 @@ def _sign_flip(A):
     signs = np.sign(A[np.argmax(np.abs(A), axis=0), list(range(A.shape[1]))])
     return signs * A
 
-
+#@jit(cache=True)
 def _eiginit(X, r, mode):
     if mode==0: return( np.zeros((X.shape[0],r)) )
     XXt = X.dot(X.T)
@@ -201,7 +198,7 @@ def _eiginit(X, r, mode):
     U = U[:, ::-1]  # reverse order 
     U = _sign_flip(U)
     return U
-
+#@jit(cache=True)
 def _normalization(X, itr):
         if itr == 0:
             normalization = np.sqrt((X ** 2).sum(axis=0))
@@ -210,7 +207,7 @@ def _normalization(X, itr):
             normalization[normalization < 1] = 1
         return normalization
 
-
+#@jit(cache=True)
 def _arrange(P, mode=None):
     # Normalize components   
     for n in range(len(P.U)):

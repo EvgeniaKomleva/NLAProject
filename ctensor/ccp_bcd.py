@@ -5,13 +5,9 @@ import functools
 from .ktensor import ktensor
 from .dtensor import dtensor, unfolded_dtensor
 from .ctools import kr, _rT, _cT, _compress, _sign_flip, _eiginit, _normalization, _arrange
+from numba.cuda import jit
 
-try:
-    # Python 2
-    xrange
-except NameError:
-    # Python 3, xrange is now named range
-    xrange = range
+#@jit(cache=True)
 def ccp_bcd(X, r=None, c=True, nu=0, p=10, q=1, tol=1E-5, maxiter=500, trace=True):
     """
     Randomized CP Decomposition using the Block Coordinate Descent Method.
@@ -116,7 +112,7 @@ def ccp_bcd(X, r=None, c=True, nu=0, p=10, q=1, tol=1E-5, maxiter=500, trace=Tru
     # Initialize [A,B,C] using the higher order SVD
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     U =   [_eiginit(X.unfold(n), r, n) for n in range(N)]
-    #U = [np.random.standard_normal(U[n].shape) for n in xrange(N)]    
+    #U = [np.random.standard_normal(U[n].shape) for n in range(N)]
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Block coordinate descent 
@@ -132,12 +128,12 @@ def ccp_bcd(X, r=None, c=True, nu=0, p=10, q=1, tol=1E-5, maxiter=500, trace=Tru
 
             normR = sci.linalg.norm(R)
             
-            for itr in xrange(maxiter):
+            for itr in range(maxiter):
                 fitold = fit
                 
-                for n in xrange(N):                  
+                for n in range(N):
                     
-                    components = [ U[j][:,l].reshape(U[j][:,l].shape[0],1)  for j in xrange(N) if j != n]
+                    components = [ U[j][:,l].reshape(U[j][:,l].shape[0],1)  for j in range(N) if j != n]
                 
                     grams = [ arr.T.dot(arr) for arr in components ]             
 
@@ -158,7 +154,7 @@ def ccp_bcd(X, r=None, c=True, nu=0, p=10, q=1, tol=1E-5, maxiter=500, trace=Tru
                 # This is loosely the proportion of the data described by the CP model, 
                 # i.e., fit of 1 is perfect
                 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-                components = [U[j][:,l].reshape(U[j][:,l].shape[0],1) for j in xrange(N)]
+                components = [U[j][:,l].reshape(U[j][:,l].shape[0],1) for j in range(N)]
                 P = ktensor( components , ([lamb_temp]) )
                 normresidual = normR**2 + P.norm()**2 - 2 * P.innerprod(dtensor(R))
                 fit = (1 - (normresidual / normR ** 2)) * rdiff**2
@@ -177,8 +173,8 @@ def ccp_bcd(X, r=None, c=True, nu=0, p=10, q=1, tol=1E-5, maxiter=500, trace=Tru
             R = R - P.toarray()
 
             # Global fit
-            #components = [U[j][:,xrange(l+1)] for j in xrange(N)]
-            #P = ktensor(components, lamb[xrange(l+1)])
+            #components = [U[j][:,range(l+1)] for j in range(N)]
+            #P = ktensor(components, lamb[range(l+1)])
             #normresidual = normX**2 + P.norm()**2 - 2 * P.innerprod(dtensor(X))
             #fit = (1 - (normresidual / normX ** 2)) * rdiff**2
             #fit_out.append( fit )

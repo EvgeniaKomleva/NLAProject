@@ -3,7 +3,7 @@ import numpy as np
 from numpy import array, prod, argsort
 from .core import tensor_mixin, khatrirao
 from .pyutils import inherit_docstring_from, from_to_without
-
+from numba.cuda import jit
 
 __all__ = [
     'dtensor',
@@ -29,17 +29,17 @@ class dtensor(tensor_mixin, np.ndarray):
     >>> T[:, :, 1] = [[13, 16, 19, 22], [14, 17, 20, 23], [15, 18, 21, 24]]
     >>> T = dtensor(T)
     """
-
+    #@jit(cache=True)
     def __new__(cls, input_array):
         obj = np.asarray(input_array).view(cls)
         return obj
-
+    #@jit(cache=True)
     def __array_wrap__(self, out_arr, context=None):
         return np.ndarray.__array_wrap__(self, out_arr, context)
-
+    #@jit(cache=True)
     def __eq__(self, other):
         return np.equal(self, other)
-
+    #@jit(cache=True)
     def _ttm_compute(self, V, mode, transp):
         sz = array(self.shape)
         r1, r2 = from_to_without(0, self.ndim, mode, separate=True)
@@ -59,7 +59,7 @@ class dtensor(tensor_mixin, np.ndarray):
         # transpose + argsort(order) equals ipermute
         newT = newT.transpose(argsort(order))
         return dtensor(newT)
-
+    #@jit(cache=True)
     def _ttv_compute(self, v, dims, vidx, remdims):
         """
         Tensor times vector product
@@ -85,6 +85,7 @@ class dtensor(tensor_mixin, np.ndarray):
     def ttt(self, other, modes=None):
         pass
 
+    #@jit(cache=True)
     def unfold(self, mode):
         """
         Unfolds a dense tensor in mode n.
@@ -134,6 +135,7 @@ class dtensor(tensor_mixin, np.ndarray):
         arr = arr.reshape(newsz)
         return unfolded_dtensor(arr, mode, self.shape)
 
+    #@jit(cache=True)
     def norm(self):
         """
         Computes the Frobenius norm for dense tensors
@@ -169,7 +171,7 @@ class unfolded_dtensor(np.ndarray):
             return
         self.ten_shape = getattr(obj, 'ten_shape', None)
         self.mode = getattr(obj, 'mode', None)
-
+    #@jit(cache=True)
     def fold(self):
         shape = array(self.ten_shape)
         N = len(shape)

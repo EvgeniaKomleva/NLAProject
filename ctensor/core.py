@@ -9,13 +9,13 @@ from scipy.sparse.linalg import eigsh
 from abc import ABCMeta, abstractmethod
 from .pyutils import is_sequence, func_attr
 #from coremod import khatrirao
-
+from numba.cuda import jit
 import sys
 import types
 
 module_funs = []
 
-
+#@jit(cache=True)
 def modulefunction(func):
     module_funs.append(func_attr(func, 'name'))
 
@@ -32,7 +32,7 @@ class tensor_mixin(object):
     """
 
     __metaclass__ = ABCMeta
-
+    #@jit(cache=True)
     def ttm(self, V, mode=None, transp=False, without=False):
         """
         Tensor times matrix product
@@ -84,10 +84,10 @@ class tensor_mixin(object):
         elif is_sequence(V):
             dims, vidx = check_multiplication_dims(mode, self.ndim, len(V), vidx=True, without=without)
             Y = self._ttm_compute(V[vidx[0]], dims[0], transp)
-            for i in xrange(1, len(dims)):
+            for i in range(1, len(dims)):
                 Y = Y._ttm_compute(V[vidx[i]], dims[i], transp)
         return Y
-
+    #@jit(cache=True)
     def ttv(self, v, modes=[], without=False):
         """
         Tensor times vector product
@@ -250,14 +250,14 @@ def check_multiplication_dims(dims, N, M, vidx=False, without=False):
     else:
         return sdims
 
-
+#@jit(cache=True)
 def innerprod(X, Y):
     """
     Inner prodcut with a Tensor
     """
     return dot(X.flatten(), Y.flatten())
 
-
+#@jit(cache=True)
 def nvecs(X, n, rank, do_flipsign=True, dtype=np.float):
     """
     Eigendecomposition of mode-n unfolding of a tensor
@@ -279,7 +279,7 @@ def nvecs(X, n, rank, do_flipsign=True, dtype=np.float):
         U = flipsign(U)
     return U
 
-
+#@jit(cache=True)
 def flipsign(U):
     """
     Flip sign of factor matrices such that largest magnitude
@@ -291,7 +291,7 @@ def flipsign(U):
             U[:, i] = -U[:, i]
     return U
 
-
+#@jit(cache=True)
 def center(X, n):
     Xn = unfold(X, n)
     N = Xn.shape[0]
@@ -300,12 +300,12 @@ def center(X, n):
     Xn = Xn - m
     return fold(Xn, n)
 
-
+#@jit(cache=True)
 def center_matrix(X):
     m = X.mean(axis=0)
     return X - m
 
-
+#@jit(cache=True)
 def scale(X, n):
     Xn = unfold(X, n)
     m = np.float_(np.sqrt((Xn ** 2).sum(axis=1)))
@@ -316,6 +316,7 @@ def scale(X, n):
 
 
 # TODO more efficient cython implementation
+#@jit(cache=True)
 def khatrirao(A, reverse=False):
     """
     Compute the columnwise Khatri-Rao product.
@@ -363,7 +364,7 @@ def khatrirao(A, reverse=False):
         P[:, n] = ab
     return P
 
-
+#@jit(cache=True)
 def teneye(dim, order):
     """
     Create tensor with superdiagonal all one, rest zeros
@@ -376,7 +377,7 @@ def teneye(dim, order):
         I[idd] = 1
     return I.reshape(ones(order) * dim)
 
-
+#@jit(cache=True)
 def tvecmat(m, n):
     d = m * n
     i2 = arange(d).reshape(m, n).T.flatten()

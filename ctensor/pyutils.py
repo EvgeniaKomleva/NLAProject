@@ -1,3 +1,6 @@
+from numba.cuda import jit
+
+
 def inherit_docstring_from(cls):
     def docstring_inheriting_decorator(fn):
         fn.__doc__ = getattr(cls, fn.__name__).__doc__
@@ -45,7 +48,7 @@ def func_attr(f, attr):
     else:
         raise ValueError('Object %s has no attr' % (str(f), attr))
 
-
+#@jit(cache=True)
 def from_to_without(frm, to, without, step=1, skip=1, reverse=False, separate=False):
     """
     Helper function to create ranges with missing entries
