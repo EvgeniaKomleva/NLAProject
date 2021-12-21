@@ -30,17 +30,10 @@ class ktensor(object):
         Weights for each dimension of the Kruskal operator.
         ``len(lambda)`` must be equal to ``U[i].shape[1]``
 
-    See also
     --------
     sktensor.dtensor : Dense tensors
     sktensor.sptensor : Sparse tensors
     sktensor.ttensor : Tensors stored in form of the Tucker operator
-
-    References
-    ----------
-    .. [1] B.W. Bader, T.G. Kolda
-           Efficient Matlab Computations With Sparse and Factored Tensors
-           SIAM J. Sci. Comput, Vol 30, No. 1, pp. 205--231, 2007
     """
 
     def __init__(self, U, lmbda=None):
@@ -189,4 +182,3 @@ class vectorized_ktensor(object):
             offset = noff
         return ktensor(U, self.lmbda)
 
-# vim: set et:

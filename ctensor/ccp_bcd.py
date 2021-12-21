@@ -49,22 +49,6 @@ def ccp_bcd(X, r=None, c=True, nu=0, p=10, q=1, tol=1E-5, maxiter=500, trace=Tru
     P : ktensor
         Tensor stored in decomposed form as a Kruskal operator.
 
-    
-    Notes
-    -----  
-    
-    
-    References
-    ----------
-    Kolda, T. G. & Bader, B. W.
-    "Tensor Decompositions and Applications." 
-    SIAM Rev. 51 (2009): 455-500
-    http://epubs.siam.org/doi/pdf/10.1137/07070111X
-
-    Comon, Pierre & Xavier Luciani & Andre De Almeida. 
-    "Tensor decompositions, alternating least squares and other tales."
-    Journal of chemometrics 23 (2009): 393-405.
-    http://onlinelibrary.wiley.com/doi/10.1002/cem.1236/abstract
 
     """
     

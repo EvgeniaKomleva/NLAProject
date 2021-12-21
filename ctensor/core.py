@@ -53,29 +53,6 @@ class tensor_mixin(object):
             modes **except** the modes specified via parameter ``mode``
 
 
-        Examples
-        --------
-        Create dense tensor
-
-        >>> T = zeros((3, 4, 2))
-        >>> T[:, :, 0] = [[ 1,  4,  7, 10], [ 2,  5,  8, 11], [3,  6,  9, 12]]
-        >>> T[:, :, 1] = [[13, 16, 19, 22], [14, 17, 20, 23], [15, 18, 21, 24]]
-        >>> T = dtensor(T)
-
-        Create matrix
-
-        >>> V = array([[1, 3, 5], [2, 4, 6]])
-
-        Multiply tensor with matrix along mode 0
-
-        >>> Y = T.ttm(V, 0)
-        >>> Y[:, :, 0]
-        array([[  22.,   49.,   76.,  103.],
-            [  28.,   64.,  100.,  136.]])
-        >>> Y[:, :, 1]
-        array([[ 130.,  157.,  184.,  211.],
-            [ 172.,  208.,  244.,  280.]])
-
         """
         if mode is None:
             mode = range(self.ndim)
@@ -131,9 +108,6 @@ class tensor_mixin(object):
     @abstractmethod
     def uttkrp(self, U, mode):
         """
-        Unfolded tensor times Khatri-Rao product:
-        :math:`M = \\unfold{X}{3} (U_1 \kr \cdots \kr U_N)`
-
         Computes the _matrix_ product of the unfolding
         of a tensor and the Khatri-Rao product of multiple matrices.
         Efficient computations are perfomed by the respective

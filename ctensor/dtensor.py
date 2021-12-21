@@ -20,14 +20,6 @@ class dtensor(tensor_mixin, np.ndarray):
     input_array : np.ndarray
         Multidimenional numpy array which holds the entries of the tensor
 
-    Examples
-    --------
-    Create dense tensor from numpy array
-
-    >>> T = np.zeros((3, 4, 2))
-    >>> T[:, :, 0] = [[ 1,  4,  7, 10], [ 2,  5,  8, 11], [3,  6,  9, 12]]
-    >>> T[:, :, 1] = [[13, 16, 19, 22], [14, 17, 20, 23], [15, 18, 21, 24]]
-    >>> T = dtensor(T)
     """
     #@jit(cache=True)
     def __new__(cls, input_array):
@@ -99,32 +91,6 @@ class dtensor(tensor_mixin, np.ndarray):
         -------
         unfolded_dtensor : unfolded_dtensor object
             Tensor unfolded along mode
-
-        Examples
-        --------
-        Create dense tensor from numpy array
-
-        >>> T = np.zeros((3, 4, 2))
-        >>> T[:, :, 0] = [[ 1,  4,  7, 10], [ 2,  5,  8, 11], [3,  6,  9, 12]]
-        >>> T[:, :, 1] = [[13, 16, 19, 22], [14, 17, 20, 23], [15, 18, 21, 24]]
-        >>> T = dtensor(T)
-
-        Unfolding of dense tensors
-
-        >>> T.unfold(0)
-        array([[  1.,   4.,   7.,  10.,  13.,  16.,  19.,  22.],
-               [  2.,   5.,   8.,  11.,  14.,  17.,  20.,  23.],
-               [  3.,   6.,   9.,  12.,  15.,  18.,  21.,  24.]])
-        >>> T.unfold(1)
-        array([[  1.,   2.,   3.,  13.,  14.,  15.],
-               [  4.,   5.,   6.,  16.,  17.,  18.],
-               [  7.,   8.,   9.,  19.,  20.,  21.],
-               [ 10.,  11.,  12.,  22.,  23.,  24.]])
-        >>> T.unfold(2)
-        array([[  1.,   2.,   3.,   4.,   5.,   6.,   7.,   8.,   9.,  10.,  11.,
-                 12.],
-               [ 13.,  14.,  15.,  16.,  17.,  18.,  19.,  20.,  21.,  22.,  23.,
-                 24.]])
         """
 
         sz = array(self.shape)
@@ -141,9 +107,6 @@ class dtensor(tensor_mixin, np.ndarray):
         Computes the Frobenius norm for dense tensors
         :math:`norm(X) = \sqrt{\sum_{i_1,\ldots,i_N} x_{i_1,\ldots,i_N}^2}`
 
-        References
-        ----------
-        [Kolda and Bader, 2009; p.457]
         """
         return np.linalg.norm(self)
 
